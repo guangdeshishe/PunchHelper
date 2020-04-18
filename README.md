@@ -12,3 +12,9 @@
 [安装包下载地址( 微信:请使用外部浏览器打开本页面 )](https://github.com/guangdeshishe/PunchHelper/releases/download/v1.0/PuncherHelper_v1.0_release_20200418-222117.apk)
  
 <img src="PuncherHelper_main.jpg" width = 50% height = 50% />
+<img src="PuncherHelper_1.jpg" width = 50% height = 50% />
+<img src="PuncherHelper_2.jpg" width = 50% height = 50% />
+<img src="PuncherHelper_3.jpg" width = 50% height = 50% />
+<img src="PuncherHelper_4.jpg" width = 50% height = 50% />
+<img src="PuncherHelper_5.jpg" width = 50% height = 50% />
+<img src="PuncherHelper_6.jpg" width = 50% height = 50% />

@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                 final EditText inputServer = new EditText(MainActivity.this);
                 inputServer.setText(workStart);
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("上班打卡").setView(inputServer)
+                builder.setTitle("上班疫情").setView(inputServer)
                         .setNegativeButton("取消", null);
                 builder.setPositiveButton("分享", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
                         String cacheMessage = messageCopy.replace(date, "{date}").replace(time, "{time}");
                         mSharedPref.edit().putString(MY_PRE_WORK_START_KEY, cacheMessage).apply();
                         mSharedPref.edit().putString(MY_PRE_WORK_START_FULL_KEY, message).apply();
-                        shareBySys(message, "上班打卡");
+                        shareBySys(message, "上班疫情");
                     }
                 });
                 builder.show();
@@ -251,14 +251,14 @@ public class MainActivity extends AppCompatActivity {
                 final EditText inputServer = new EditText(MainActivity.this);
                 inputServer.setText(workEnd);
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("下班打卡").setView(inputServer)
+                builder.setTitle("下班疫情").setView(inputServer)
                         .setNegativeButton("取消", null);
                 builder.setPositiveButton("分享", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         String message = inputServer.getText().toString();
                         String cacheMessage = message.replace(date, "{date}").replace(time, "{time}");
                         mSharedPref.edit().putString(MY_PRE_WORK_END_KEY, cacheMessage).apply();
-                        shareBySys(message, "下班打卡");
+                        shareBySys(message, "下班疫情");
                     }
                 });
                 builder.show();
@@ -276,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
                 if (TextUtils.isEmpty(userName)) {
                     userName = "{名字}";
                 }
-                String weekend = userName + "  " + date + "  正常上班\n" +
+                String weekend = userName + "  " + date + "  在家休息\n" +
                         "\n" +
                         "身体状况： 正常～已填表";
                 String weekendCache = mSharedPref.getString(MY_PRE_WEEKEND_KEY, "");
@@ -287,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
                 final EditText inputServer = new EditText(MainActivity.this);
                 inputServer.setText(weekend);
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("周末打卡").setView(inputServer)
+                builder.setTitle("休息疫情").setView(inputServer)
                         .setNegativeButton("取消", null);
                 builder.setPositiveButton("分享", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -295,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
                         String cacheMessage = message.replace(date, "{date}");
                         mSharedPref.edit().putString(MY_PRE_WEEKEND_KEY, cacheMessage).apply();
                         mSharedPref.edit().putString(MY_PRE_WEEKEND_FULL_KEY, message).apply();
-                        shareBySys(message, "周末打卡");
+                        shareBySys(message, "休息疫情");
                     }
                 });
                 builder.show();
