@@ -253,6 +253,14 @@ public class PluginWebView extends WebView {
         if (!isEmpty(isRoommateHealth)) {//4.未满足14天的合租人身体是否健康？
             jsBuilder.append("$(\":radio[name='isRoommateHealth'][value='" + isRoommateHealth + "']\").prop(\"checked\", \"checked\");");
         }
+        String isContactOverseasPeople = mParams.get("isContactOverseasPeople");
+        if (!isEmpty(isContactOverseasPeople)) {//近14天是否接触过境外入境人员（交谈、握手、其他肢体接触等）？
+            jsBuilder.append("$(\":radio[name='isContactOverseasPeople'][value='" + isContactOverseasPeople + "']\").prop(\"checked\", \"checked\");$('input[type=radio][name=isContactOverseasPeople]').change();");
+        }
+        String contactOverseasSituation = mParams.get("contactOverseasSituation");
+        if (!isEmpty(contactOverseasSituation)) {//接触的时间及境外入境人员所属的国家：
+            jsBuilder.append("$('#contactOverseasSituation').val('" + contactOverseasSituation + "');");
+        }
         evaluateJavascript(jsBuilder.toString(), null);
     }
 
@@ -298,6 +306,8 @@ public class PluginWebView extends WebView {
                 "                \"isEatingWithRoommate\":  $(\"input[name='isEatingWithRoommate']:checked\").val(),\n" +
                 "                \"isRoommateHealth\":  $(\"input[name='isRoommateHealth']:checked\").val(),\n" +
                 "\n" +
+                "                \"contactOverseasSituation\": $('#contactOverseasSituation').val(),\n" +
+                "                \"isContactOverseasPeople\": $(\"input[name='isContactOverseasPeople']:checked\").val()," +
                 "            }};getInfo();";
         jsBuilder.append(sendDataJs);
         evaluateJavascript(jsBuilder.toString(), new ValueCallback<String>() {
@@ -311,6 +321,20 @@ public class PluginWebView extends WebView {
         });
         //提交表单
         evaluateJavascript(JS_HEAD + SUBMIT_BUTTON_CLICK_JS, null);
+    }
+
+    /**
+     * 计算纵向范围，用于滚动到底部
+     * <p>
+     * (non-Javadoc)
+     *
+     * @see android.webkit.WebView#computeVerticalScrollRange()
+     */
+    @Override
+    protected int computeVerticalScrollRange() {
+        int computeVerticalScrollRange = super.computeVerticalScrollRange();
+        Log.i(TAG, "computeVerticalScrollRange" + computeVerticalScrollRange);
+        return computeVerticalScrollRange;
     }
 
 }

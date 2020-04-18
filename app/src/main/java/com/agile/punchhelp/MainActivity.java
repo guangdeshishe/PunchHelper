@@ -223,6 +223,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+//        mWebView.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                int bottom = mWebView.computeVerticalScrollRange();
+//                mWebView.scrollTo(0, bottom);
+//            }
+//        }, 2000);
         requestPermission();
     }
 
