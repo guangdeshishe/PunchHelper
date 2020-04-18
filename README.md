@@ -9,7 +9,7 @@
 - 【带包带卡】(分享带包带卡提醒信息，自动使用上次修改后的模板)
 - 【设置提醒】(可以设置上下班疫情上报提醒)
 
-[安装包下载地址( 微信:请使用外部浏览器打开本页面 )](https://github.com/guangdeshishe/PunchHelper/releases/download/v1.0/PuncherHelper_v1.0_release_20200418-222117.apk)
+[安装包下载地址( 微信:请使用外部浏览器打开本页面 )](https://github.com/guangdeshishe/PunchHelper/releases/download/v1.0/PuncherHelper_v1.0_release_20200418-230759.apk)
  
 <img src="PuncherHelper_main.jpg" width = 50% height = 50% />
 <img src="PuncherHelper_1.jpg" width = 50% height = 50% />
