@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     private final static String MY_PRE_WORK_START_FULL_KEY = "work_start_full";//上班
     private final static String MY_PRE_WORK_END_KEY = "work_end";//下班
     private final static String MY_PRE_WORK_NOTICE_KEY = "work_notice";//带包带卡
+    private final static String MY_PRE_WEEKEND_KEY = "weekend";//周末疫情
+    private final static String MY_PRE_WEEKEND_FULL_KEY = "weekend_full";//周末疫情
     private static final SimpleDateFormat mDateFormat = new SimpleDateFormat("MM月dd日");
     private static final SimpleDateFormat mTimeFormat = new SimpleDateFormat("HH:mm");
     private Button mWorkNotice;
@@ -223,6 +225,42 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.mWeekend).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //休息疫情
+                Date dateTime = new Date();
+                final String date = mDateFormat.format(dateTime);
+                final String time = mTimeFormat.format(dateTime);
+                String userName = mWebView.getUserName();
+                if (TextUtils.isEmpty(userName)) {
+                    userName = "{名字}";
+                }
+                String weekend = userName + "  " + date + "  正常上班\n" +
+                        "\n" +
+                        "身体状况： 正常～已填表";
+                String weekendCache = mSharedPref.getString(MY_PRE_WEEKEND_KEY, "");
+                if (!TextUtils.isEmpty(weekendCache)) {
+                    weekendCache = weekendCache.replace("{date}", date);
+                    weekend = weekendCache;
+                }
+                final EditText inputServer = new EditText(MainActivity.this);
+                inputServer.setText(weekend);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("周末打卡").setView(inputServer)
+                        .setNegativeButton("取消", null);
+                builder.setPositiveButton("分享", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        String message = inputServer.getText().toString();
+                        String cacheMessage = message.replace(date, "{date}");
+                        mSharedPref.edit().putString(MY_PRE_WEEKEND_KEY, cacheMessage).apply();
+                        mSharedPref.edit().putString(MY_PRE_WEEKEND_FULL_KEY, message).apply();
+                        shareBySys(message, "周末打卡");
+                    }
+                });
+                builder.show();
+            }
+        });
 
 //        mWebView.postDelayed(new Runnable() {
 //            @Override
