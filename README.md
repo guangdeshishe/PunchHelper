@@ -8,5 +8,5 @@
 - 支持下班分享疫情
 - 支持带包带卡分享
 - 支持设置日历打卡提醒
-
- ![image](PuncherHelper_main.jpg)
+ 
+<img src="PuncherHelper_main.jpg" width = 50% height = 50% />
