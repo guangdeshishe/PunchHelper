@@ -1,6 +1,7 @@
 package com.agile.punchhelp;
 
 import android.Manifest;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,12 +14,16 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -30,6 +35,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import static com.agile.punchhelp.PluginWebView.MY_PRE_NAME;
@@ -53,9 +59,20 @@ public class MainActivity extends AppCompatActivity {
     private final static String MY_PRE_WORK_NOTICE_KEY = "work_notice";//带包带卡
     private final static String MY_PRE_WEEKEND_KEY = "weekend";//周末疫情
     private final static String MY_PRE_WEEKEND_FULL_KEY = "weekend_full";//周末疫情
+    private final static String MY_PRE_CALENDAR_START_KEY = "calender_start";//早上日历提醒
+    private final static String MY_PRE_CALENDAR_END_KEY = "calender_end";//下午日历提醒
+    private final static String MY_PRE_CALENDAR_MESSAGE_KEY = "calender_message";//日历提醒文案
     private static final SimpleDateFormat mDateFormat = new SimpleDateFormat("MM月dd日");
     private static final SimpleDateFormat mTimeFormat = new SimpleDateFormat("HH:mm");
     private Button mWorkNotice;
+
+    private String[] permissions = {
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.INTERNET,
+            Manifest.permission.WRITE_CALENDAR,
+            Manifest.permission.READ_CALENDAR
+    };//需要的权限
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +81,30 @@ public class MainActivity extends AppCompatActivity {
             android.webkit.WebView.enableSlowWholeDocumentDraw();
         }
         mSharedPref = getSharedPreferences(MY_PRE_NAME, Context.MODE_PRIVATE);
+
+        requestPermission();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        int isPermissionOkCount = 0;
+        for (int i = 0; i < grantResults.length; i++) {
+            if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                isPermissionOkCount++;
+            }
+        }
+        if (isPermissionOkCount == grantResults.length) {
+            //全部权限都同意了
+            initView();
+        } else {
+            Toast.makeText(this, "权限不够，无法正常使用", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void initView() {
         setContentView(R.layout.activity_main);
+
         mWebView = findViewById(R.id.mWebView);
         mSubmitForm = findViewById(R.id.mSubmitForm);
         mWordStart = findViewById(R.id.mWordStart);
@@ -269,7 +309,95 @@ public class MainActivity extends AppCompatActivity {
 //                mWebView.scrollTo(0, bottom);
 //            }
 //        }, 2000);
-        requestPermission();
+
+        findViewById(R.id.mCalendarButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final View contentView = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_set_calendar, null);
+
+                final TextView startTimeEdit = contentView.findViewById(R.id.mStartCalenderTime);
+                String startCacheTime = mSharedPref.getString(MY_PRE_CALENDAR_START_KEY, "07:00");
+                String[] startCacheTimeArray = startCacheTime.split(":");
+                final int startHour = Integer.parseInt(startCacheTimeArray[0]);
+                final int startMinute = Integer.parseInt(startCacheTimeArray[1]);
+                startTimeEdit.setText(startCacheTime);
+                startTimeEdit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                String time = CalendarUtil.getFullTime(hourOfDay, minute);
+                                startTimeEdit.setText(time);
+                            }
+                        }, startHour, startMinute, true).show();
+                    }
+                });
+                final TextView endTimeEdit = contentView.findViewById(R.id.mEndCalenderTime);
+                String endCacheTime = mSharedPref.getString(MY_PRE_CALENDAR_END_KEY, "07:00");
+                String[] endCacheTimeArray = endCacheTime.split(":");
+                final int endHour = Integer.parseInt(endCacheTimeArray[0]);
+                final int endMinute = Integer.parseInt(endCacheTimeArray[1]);
+                endTimeEdit.setText(endCacheTime);
+                endTimeEdit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String cacheTime = mSharedPref.getString(MY_PRE_CALENDAR_END_KEY, "17:30");
+                        String[] cacheTimeArray = cacheTime.split(":");
+                        int hour = Integer.parseInt(cacheTimeArray[0]);
+                        int minute = Integer.parseInt(cacheTimeArray[1]);
+                        new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                String time = CalendarUtil.getFullTime(hourOfDay, minute);
+                                endTimeEdit.setText(time);
+                            }
+                        }, endHour, endMinute, true).show();
+                    }
+                });
+                final EditText noticeMessageEdit = contentView.findViewById(R.id.mEndCalenderMessenger);
+                String messageCacheString = mSharedPref.getString(MY_PRE_CALENDAR_MESSAGE_KEY, "疫情登记助手：该打卡了");
+                noticeMessageEdit.setText(messageCacheString);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("请选择每天提醒时间").setView(contentView)
+                        .setNegativeButton("取消", null);
+                builder.setPositiveButton("添加", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        String startTime = startTimeEdit.getText().toString();
+                        String endTime = endTimeEdit.getText().toString();
+                        String message = noticeMessageEdit.getText().toString();
+                        mSharedPref.edit().putString(MY_PRE_CALENDAR_START_KEY, startTime).apply();
+                        mSharedPref.edit().putString(MY_PRE_CALENDAR_END_KEY, endTime).apply();
+                        mSharedPref.edit().putString(MY_PRE_CALENDAR_MESSAGE_KEY, message).apply();
+
+                        CalendarUtil.checkAndAddCalendarAccount(MainActivity.this);//检查日历账户
+
+                        final Calendar startCalendar = Calendar.getInstance();
+                        startCalendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(startTime.split(":")[0]));
+                        startCalendar.set(Calendar.MINUTE, Integer.parseInt(startTime.split(":")[1]));
+                        startCalendar.set(Calendar.SECOND, 0);
+                        //添加下午日历提醒
+                        CalendarUtil.insertCalendarEvent(MainActivity.this, message, message, startCalendar.getTimeInMillis(), 0);
+
+                        final Calendar endCalendar = Calendar.getInstance();
+                        endCalendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(endTime.split(":")[0]));
+                        endCalendar.set(Calendar.MINUTE, Integer.parseInt(endTime.split(":")[1]));
+                        endCalendar.set(Calendar.SECOND, 0);
+                        //添加下午日历提醒
+                        if (CalendarUtil.insertCalendarEvent(MainActivity.this, message, message, endCalendar.getTimeInMillis(), 0)) {
+                            Toast.makeText(MainActivity.this, "添加日历提醒成功!", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+                builder.show();
+            }
+        });
+
+
+        long startTime = System.currentTimeMillis() + 1000 * 60;
+//        CalendarUtil.insertCalendarEvent(this,"疫情登记助手提醒您：该打卡了","内容",startTime,0);
     }
 
     //系统分享文本
@@ -358,15 +486,12 @@ public class MainActivity extends AppCompatActivity {
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.READ_CONTACTS)) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.INTERNET},
-                        0);
+                ActivityCompat.requestPermissions(this, permissions, 0);
 
             } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.INTERNET},
-                        0);
+                ActivityCompat.requestPermissions(this, permissions, 0);
             }
         }
     }
+
 }

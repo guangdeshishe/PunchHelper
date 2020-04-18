@@ -57,7 +57,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/mButtonThirdContentView"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mButtonContentView">
@@ -85,6 +85,26 @@
             android:layout_margin="0dp"
             android:layout_weight="1"
             android:text="带包\n带卡" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mButtonThirdContentView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mButtonSecondContentView">
+
+        <Button
+            android:id="@+id/mCalendarButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:text="设置\n提醒" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
