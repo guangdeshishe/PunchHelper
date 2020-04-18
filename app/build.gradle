@@ -41,6 +41,15 @@ android {
         }
     }
 
+    android.applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def outputFile = output.outputFile
+            if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                //这里修改apk文件名
+                outputFileName  = "PuncherHelper_v${defaultConfig.versionName}_${buildType.name}_"+new Date().format("yyyyMMdd-HHmmss")+".apk"
+            }
+        }
+    }
 }
 
 dependencies {
